@@ -1,4 +1,4 @@
-﻿# Simple Inventory Management System
+# Simple Inventory Management System
 
 A full-stack Inventory Management application developed for the technical assessment. The system provides core inventory operations including category management, product tracking, stock movements (Stock In / Stock Out), audit trail history, and an operational dashboard.
 
@@ -53,6 +53,12 @@ npm install
 npm run dev
 ```
 *The frontend development server will start at `http://localhost:5173`.*
+
+### Step 3: Run Automated Unit Tests
+```bash
+dotnet test backend/InventoryManagement.slnx
+```
+*Executes all xUnit test suites covering business rules, negative stock prevention, and validation.*
 
 ---
 
