@@ -1,0 +1,58 @@
+﻿# Single-Command Startup for Full-Stack Inventory Management System
+services:
+  # 1. PostgreSQL 16 Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: inventory-db
+    environment:
+      POSTGRES_DB: inventory_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - inventory-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d inventory_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. .NET 10 Web API Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: inventory-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=inventory_db;Username=postgres;Password=postgrespassword
+    ports:
+      - "5000:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - inventory-net
+
+  # 3. React Frontend (Nginx Production Server)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: inventory-ui
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - inventory-net
+
+networks:
+  inventory-net:
+    driver: bridge
+
+volumes:
+  pgdata:
