@@ -6,12 +6,31 @@ Built with a **.NET 10 Web API** following **Clean Architecture**, a **React 19 
 
 ---
 
+## Prerequisites & Required Tools
+
+Depending on how you plan to run or develop the project, make sure the following tools are installed:
+
+### 1. For Docker Deployment (Recommended - 1-Command Startup)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (v24+ with Docker Compose v2)
+- [Git](https://git-scm.com/)
+
+### 2. For Local Host Development (Without Docker)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (v10.0.100+)
+- [Node.js](https://nodejs.org/) (v20.x or v22.x LTS) & **npm** (v10+)
+- [PostgreSQL 16](https://www.postgresql.org/download/) (or any PostgreSQL instance / pgAdmin / DBeaver)
+
+### 3. Recommended IDE & Extensions
+- **Visual Studio Code** (or Visual Studio 2022/2025 / JetBrains Rider)
+- **VS Code Extensions**:
+  - *C# Dev Kit* (`ms-dotnettools.csdevkit`)
+  - *Tailwind CSS IntelliSense* (`bradlc.vscode-tailwindcss`)
+  - *ESLint* & *Prettier*
+
+---
+
 ## Quick Start (Docker - Recommended)
 
 The easiest way to run the entire stack (Database, Backend API, and Frontend) is using Docker Compose:
-
-### Prerequisites
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
 
 ### 1. Start all services
 ```bash
@@ -33,11 +52,6 @@ docker compose down
 ## Running Locally Without Docker
 
 If you prefer running the services directly on your host machine:
-
-### Prerequisites
-- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
-- [Node.js](https://nodejs.org/) (v20+ recommended)
-- A running PostgreSQL instance (or update the connection string in `backend/src/InventoryManagement.Api/appsettings.json`)
 
 ### Step 1: Start the Backend API
 ```bash
