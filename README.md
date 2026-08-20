@@ -1,147 +1,173 @@
-﻿# 📦 Inventory Management System (Full-Stack Monorepo)
+﻿# Simple Inventory Management System
 
-A production-grade, full-stack Inventory Management System built with **React 19 + TypeScript** on the frontend, a **.NET 10 Web API** implementing **Clean Architecture** on the backend, and **PostgreSQL 16** for relational persistence.
+A full-stack Inventory Management application developed for the technical assessment. The system provides core inventory operations including category management, product tracking, stock movements (Stock In / Stock Out), audit trail history, and an operational dashboard.
+
+Built with a **.NET 10 Web API** following **Clean Architecture**, a **React 19 + TypeScript** frontend, and a **PostgreSQL** relational database.
 
 ---
 
-## 🚀 Quickstart: One-Command Startup (Docker)
+## Quick Start (Docker - Recommended)
 
-To build and run the entire stack (PostgreSQL + .NET 10 API + React Frontend + Nginx):
+The easiest way to run the entire stack (Database, Backend API, and Frontend) is using Docker Compose:
 
+### Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
+
+### 1. Start all services
 ```bash
 docker compose up --build
 ```
 
-### 🌐 Service Endpoints:
-| Service | URL | Description |
-|---|---|---|
-| 🖥️ **Frontend Web Application** | [http://localhost:3000](http://localhost:3000) | Full UI (Dashboard, Products, Categories, Stock Movements) |
-| ⚡ **Backend API & Swagger** | [http://localhost:5000/swagger](http://localhost:5000/swagger) | Interactive OpenAPI documentation to test all endpoints |
-| 🐘 **PostgreSQL Database** | `localhost:5432` | Auto-migrated and seeded relational database |
+### 2. Access the application
+- **Frontend Application**: [http://localhost:3000](http://localhost:3000)
+- **Swagger API Documentation**: [http://localhost:5000/swagger](http://localhost:5000/swagger)
+- **PostgreSQL Database**: `localhost:5432` (Database: `inventory_db`, User: `postgres`, Password: `postgrespassword`)
 
-To stop all services:
+### 3. Stop all services
 ```bash
 docker compose down
 ```
 
 ---
 
-## 🛠️ Technology Stack
+## Running Locally Without Docker
 
-### Backend
-- **Language & Runtime**: C# 13 / .NET 10 Web API
-- **Architecture**: **Clean Architecture (Mandatory)**
-  - `InventoryManagement.Core`: Domain Entities, DTOs, Custom Exceptions, Service Interfaces.
-  - `InventoryManagement.Infrastructure`: EF Core `AppDbContext`, Npgsql PostgreSQL provider, `DbInitializer` auto-seeder, Service implementations.
-  - `InventoryManagement.Api`: REST Controllers, Global Exception Middleware, Swagger/OpenAPI, CORS.
-- **ORM**: Entity Framework Core 10
-- **Database**: PostgreSQL 16
-- **Dependency Injection**: Built-in .NET IoC Container
+If you prefer running the services directly on your host machine:
 
-### Frontend
-- **Framework**: React 19 + TypeScript + Vite
-- **Styling**: Tailwind CSS
-- **State & Caching**: TanStack React Query v5
-- **Routing**: React Router DOM v7
-- **Icons**: Lucide React
-- **Notifications**: React Hot Toast
+### Prerequisites
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- [Node.js](https://nodejs.org/) (v20+ recommended)
+- A running PostgreSQL instance (or update the connection string in `backend/src/InventoryManagement.Api/appsettings.json`)
 
----
-
-## 🏛️ System & Monorepo Structure
-
-```text
-inventory-management-system/
-├── docker-compose.yml                        # 🚀 1-command startup (Postgres + Backend + Frontend)
-├── README.md                                 # Complete documentation
-│
-├── backend/                                  # .NET 10 Web API Solution
-│   ├── InventoryManagement.slnx
-│   ├── Dockerfile                            # Multi-stage .NET 10 build
-│   └── src/
-│       ├── InventoryManagement.Core/         # Domain Entities, DTOs, Interfaces, Exceptions
-│       ├── InventoryManagement.Infrastructure/# EF Core, DbContext, Services, Auto-seeder
-│       └── InventoryManagement.Api/          # Controllers, Program.cs, Middleware, Swagger
-│
-└── frontend/                                 # React + TypeScript Web Application
-    ├── Dockerfile                            # Multi-stage React + Nginx Alpine build
-    ├── nginx.conf                            # High-performance reverse proxy
-    └── src/
-        ├── api/                              # Axios API client & endpoints (Live REST calls)
-        ├── components/                       # Common UI, Modals, Badges, Layout
-        ├── hooks/                            # React Query custom hooks
-        ├── pages/                            # Dashboard, Products, Categories, Inventory
-        ├── types/                            # TypeScript interfaces
-        └── utils/                            # Formatters, validators, category styling
-```
-
----
-
-## 📋 Features & Business Rules
-
-### 1. Category Management (`/categories`)
-- **CRUD Operations**: Create, Read, Update, Delete categories.
-- **Visual Themes**: Customizable semantic icons (16 options) and curated color palettes (8 options).
-- **Business Rules**:
-  - Category names **must be unique** (enforced in database unique index and API service).
-  - Deletion guard: Categories containing active products **cannot be deleted**.
-
-### 2. Product Management (`/products`)
-- **CRUD Operations**: Create, Read, Update, Delete products.
-- **Fields**: SKU, Name, Description, Category, Unit Price, Low Stock Threshold, Stock Balance.
-- **Instant Search & Filter**: 0ms local client-side search with category and stock level filters.
-- **Business Rules**:
-  - SKU **must be unique** (enforced by unique database constraint).
-  - Product must belong to an existing category.
-  - Initial stock intake automatically generates an initial `StockIn` audit record in PostgreSQL.
-
-### 3. Inventory & Stock Movement (`/inventory`)
-- **Stock In (+)**: Adds inventory with supplier/batch reference.
-- **Stock Out (-)**: Dispatches inventory with sales order reference.
-- **Audit Trail**: Complete immutable log tracking `BalanceBefore`, `BalanceAfter`, `Quantity`, `MovementType`, `Remarks`, and UTC `Timestamp`.
-- **Business Rules**:
-  - **Negative Stock Protection**: Stock balance cannot become negative under any circumstance.
-  - **Transactional Consistency**: ACID database transactions ensure stock balance and audit records update atomically.
-
-### 4. Dashboard & Analytics (`/`)
-- **KPI Metrics**: Total Products, Total Categories, Total Stock Units, Inventory Valuation ($), Outbound Units Sold, Low Stock Alerts.
-- **Bestseller Ranking**: Ranked bestsellers with visual volume progress bars, unit sales, and revenue generated.
-- **Interactive Category Tabs**: Filter bestseller performance by individual category.
-- **Recent Audit Trail**: Live list of latest 6 transactions directly queried from PostgreSQL.
-
----
-
-## 💻 Local Development (Without Docker)
-
-### 1. Run the Backend API:
+### Step 1: Start the Backend API
 ```bash
 cd backend/src/InventoryManagement.Api
 dotnet run
 ```
-*API will run at `http://localhost:5000` (Swagger UI at `http://localhost:5000/swagger`).*
+*The API will start at `http://localhost:5000` with Swagger UI at `http://localhost:5000/swagger`.*
 
-### 2. Run the Frontend:
+### Step 2: Start the Frontend Application
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-*Frontend will run at `http://localhost:5173`.*
+*The frontend development server will start at `http://localhost:5173`.*
 
 ---
 
-## 🛡️ API Endpoints Summary
+## Technology Stack
+
+### Backend
+- **C# / .NET 10 Web API**
+- **Clean Architecture**:
+  - `InventoryManagement.Core`: Domain entities (`Category`, `Product`, `StockMovement`), DTO records, custom domain exceptions, and service interfaces.
+  - `InventoryManagement.Infrastructure`: EF Core `AppDbContext`, PostgreSQL configuration, service implementations, and automatic schema initialization/seeding.
+  - `InventoryManagement.Api`: REST controllers, global exception handling middleware, Swagger documentation, and dependency injection setup.
+- **Entity Framework Core 10** with Npgsql provider.
+- **Swashbuckle / OpenAPI** for interactive API documentation.
+
+### Frontend
+- **React 19** with **TypeScript** (Vite build tool).
+- **Tailwind CSS** for clean, responsive UI styling.
+- **TanStack React Query v5** for server-state management and API caching.
+- **React Router DOM v7** for client-side navigation.
+- **Lucide React** for UI icons.
+- **React Hot Toast** for user feedback notifications.
+
+### Database
+- **PostgreSQL 16** relational database.
+- Schema definitions and sample seed data are also provided in [`database/schema.sql`](database/schema.sql).
+
+---
+
+## Project Structure
+
+```text
+inventory-management-system/
+├── docker-compose.yml                        # Docker Compose configuration (Postgres + API + UI)
+├── README.md                                 # Project documentation
+├── database/
+│   └── schema.sql                            # SQL schema definition and seed data
+│
+├── backend/                                  # .NET 10 Solution
+│   ├── InventoryManagement.slnx
+│   ├── Dockerfile
+│   └── src/
+│       ├── InventoryManagement.Core/         # Domain entities, DTOs, interfaces, exceptions
+│       ├── InventoryManagement.Infrastructure/# EF Core context, repositories/services, DbInitializer
+│       └── InventoryManagement.Api/          # Controllers, Program.cs, middleware, Swagger
+│
+└── frontend/                                 # React + TypeScript Client
+    ├── Dockerfile                            # Production multi-stage build (Nginx)
+    ├── nginx.conf                            # Reverse proxy config for API requests
+    └── src/
+        ├── api/                              # Axios API client modules
+        ├── components/                       # Reusable UI components, modals, layout
+        ├── hooks/                            # Custom React Query hooks
+        ├── pages/                            # Dashboard, Products, Categories, Inventory
+        ├── types/                            # TypeScript interfaces & DTO definitions
+        └── utils/                            # Formatting & validation helper functions
+```
+
+---
+
+## Functional Modules & Business Rules
+
+### 1. Category Management (`/categories`)
+- Full CRUD operations (View, Create, Edit, Delete).
+- **Unique Name Constraint**: Category names must be unique (enforced at database and service levels).
+- **Deletion Protection**: A category cannot be deleted if products are currently assigned to it.
+- **Customization**: Visual category badges with custom colors and semantic icons.
+
+### 2. Product Management (`/products`)
+- Full CRUD operations with fields: SKU, Name, Description, Category, Unit Price (RM), and Low Stock Threshold.
+- **Unique SKU Constraint**: Every product must have a unique SKU.
+- **Category Association**: Products must belong to an existing category.
+- **Instant Client-side Search & Filtering**: Filter by keyword (Name/SKU/Description), category, or stock level without full-page reloads.
+- **Initial Stock Handling**: Setting an initial stock quantity automatically logs an initial `StockIn` transaction.
+
+### 3. Inventory & Stock Movements (`/inventory`)
+- Supports **Stock In** (receiving inventory) and **Stock Out** (dispatching inventory).
+- **Negative Stock Prevention**: Stock Out operations validate available inventory before execution. If requested quantity exceeds stock balance, the transaction is rejected.
+- **Transactional Integrity**: Uses database transactions to ensure stock balance updates and audit logs are committed atomically.
+- **Audit Trail**: Every transaction records `BalanceBefore`, `BalanceAfter`, `Quantity`, `MovementType`, `Remarks`, and a UTC timestamp.
+
+### 4. Operational Dashboard (`/`)
+- Key performance metrics: Total Products, Total Categories, Total Stock Units, Total Inventory Valuation (RM), Outbound Units Sold, and Low Stock Alerts.
+- **Bestsellers Ranking**: Visual volume bars showing top-selling products by units and revenue, filterable by category.
+- **Recent Activity**: Quick view of the 6 most recent stock movements.
+
+---
+
+## API Endpoints Reference
 
 | Method | Endpoint | Description |
 |---|---|---|
-| `GET` | `/api/categories` | Get all categories with product counts |
-| `POST` | `/api/categories` | Create a new category (unique name check) |
+| `GET` | `/api/categories` | Get all categories with assigned product count |
+| `GET` | `/api/categories/{id}` | Get single category details |
+| `POST` | `/api/categories` | Create a category (validates unique name) |
 | `PUT` | `/api/categories/{id}` | Update category details |
-| `DELETE` | `/api/categories/{id}` | Delete category (blocked if products exist) |
-| `GET` | `/api/products` | Get products (supports `search`, `categoryId`, `stockStatus`) |
-| `POST` | `/api/products` | Create product (unique SKU check, optional initial stock) |
+| `DELETE` | `/api/categories/{id}` | Delete category (prevented if products exist) |
+| `GET` | `/api/products` | List products (query params: `search`, `categoryId`, `stockStatus`) |
+| `GET` | `/api/products/{id}` | Get single product details |
+| `POST` | `/api/products` | Create product (validates unique SKU, records initial stock) |
 | `PUT` | `/api/products/{id}` | Update product details |
 | `DELETE` | `/api/products/{id}` | Delete product |
-| `GET` | `/api/inventory/movements` | Retrieve audit trail of stock movements |
-| `POST` | `/api/inventory/movement` | Record Stock In / Stock Out (atomic balance update) |
-| `GET` | `/api/dashboard/summary` | Get aggregated dashboard metrics & bestsellers |
+| `GET` | `/api/inventory/movements` | List stock movement history (optional filter: `productId`) |
+| `POST` | `/api/inventory/movement` | Record a Stock In or Stock Out movement |
+| `GET` | `/api/dashboard/summary` | Get aggregated dashboard metrics, bestsellers, and recent logs |
+
+---
+
+## Assumptions & Design Decisions
+
+1. **Automatic Database Seeding**:
+   - On application startup, `DbInitializer.cs` automatically creates the PostgreSQL schema and seeds starter categories, products, and movement logs if the database is empty.
+2. **Currency Unit**:
+   - Monetary values are formatted in Malaysian Ringgit (`RM`) with standard 2 decimal places.
+3. **Soft vs. Hard Deletion**:
+   - Categories enforce referential integrity and block deletion if products exist.
+   - Deleting a product cascades to its associated stock movement history records.
+4. **Client-Side Responsiveness**:
+   - Collapsible sidebar allows users to toggle between a compact icon-rail view and full navigation, adapting the page container width for broader table views.
